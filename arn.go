@@ -12,11 +12,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/sts"
 )
 
-type awsArn struct {
+type AwsArn struct {
 }
 
-func (m *awsArn) builder(partition *string, service string, region *string, account *string, resource *string) (string, error) {
-	var awsArn string
+func (m *AwsArn) Builder(partition *string, service string, region *string, account *string, resource *string) (string, error) {
+	var AwsArn string
 	var err error
 
 	defaultPartition := "aws"
@@ -30,7 +30,7 @@ func (m *awsArn) builder(partition *string, service string, region *string, acco
 	}
 
 	if region == nil {
-		region, err = m.getRegion()
+		region, err = m.GetRegion()
 	}
 
 	if err != nil {
@@ -38,14 +38,14 @@ func (m *awsArn) builder(partition *string, service string, region *string, acco
 	}
 
 	if account == nil {
-		account = m.getAccountId()
+		account = m.GetAccountId()
 	}
 
-	awsArn = "awsArn:aws:" + service + ":" + *region + ":" + *account + ":" + *resource
-	return awsArn, nil
+	AwsArn = "awsArn:aws:" + service + ":" + *region + ":" + *account + ":" + *resource
+	return AwsArn, nil
 }
 
-func (m *awsArn) getRegion() (*string, error) {
+func (m *AwsArn) GetRegion() (*string, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
 		return nil, fmt.Errorf("failed loading config, %v", err)
@@ -54,7 +54,7 @@ func (m *awsArn) getRegion() (*string, error) {
 	return &cfg.Region, nil
 }
 
-func (m *awsArn) getAccountId() *string {
+func (m *AwsArn) GetAccountId() *string {
 	//goland:noinspection GoDeprecation
 	svc := sts.New(session.New())
 	input := &sts.GetCallerIdentityInput{}
