@@ -80,11 +80,11 @@ func TestAwsArn_Builder(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &AwsArn{
-				partition: tt.fields.partition,
-				service:   tt.fields.service,
-				region:    tt.fields.region,
-				account:   tt.fields.account,
-				resource:  tt.fields.resource,
+				Partition: tt.fields.partition,
+				Service:   tt.fields.service,
+				Region:    tt.fields.region,
+				Account:   tt.fields.account,
+				Resource:  tt.fields.resource,
 			}
 			got, err := m.Builder()
 			if (err != nil) != tt.wantErr {
