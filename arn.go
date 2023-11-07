@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -20,8 +21,8 @@ type AwsArn struct {
 	Resource  *string
 }
 
-func (m *AwsArn) Builder() (string, error) {
-	var AwsArn string
+func (m *AwsArn) Builder() []string {
+	var AwsArn []string
 	var err error
 
 	defaultPartition := "aws"
@@ -36,18 +37,29 @@ func (m *AwsArn) Builder() (string, error) {
 
 	if m.Region == nil {
 		m.Region, err = m.GetRegion()
-	}
-
-	if err != nil {
-		log.Print(err)
+		if err != nil {
+			log.Printf("region %s", err)
+		}
 	}
 
 	if m.Account == nil {
 		m.Account = m.GetAccountId()
 	}
 
-	AwsArn = "awsArn:aws:" + m.Service + ":" + *m.Region + ":" + *m.Account + ":" + *m.Resource
-	return AwsArn, nil
+	if m.Service != "" {
+		m.Service = strings.ToLower(m.Service)
+	}
+
+	AwsArn = append(AwsArn, "arn:aws:"+m.Service+":"+*m.Region+":"+*m.Account+":"+*m.Resource)
+
+	switch m.Service {
+	case "logs":
+		AwsArn = append(AwsArn, "arn:aws:"+m.Service+":"+*m.Region+":"+*m.Account+":"+*m.Resource+":*")
+	}
+
+	//todo is this a service that needs more than one arn in its resource string e.g. s3
+
+	return AwsArn
 }
 
 func (m *AwsArn) GetRegion() (*string, error) {

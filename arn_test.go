@@ -49,50 +49,53 @@ func Test_awsArn_getRegion(t *testing.T) {
 }
 
 func TestAwsArn_Builder(t *testing.T) {
-
+	t.Parallel()
 	type fields struct {
-		partition *string
-		service   string
-		region    *string
-		account   *string
-		resource  *string
+		Partition *string
+		Service   string
+		Region    *string
+		Account   *string
+		Resource  *string
 	}
 
+	empty := ""
 	partition := "aws"
 	region := "eu-west-2"
 	account := "680235478471"
+	want := []string{"arn:aws:ssm:eu-west-2:680235478471:"}
+	wantEmpty := []string{"arn:aws:logs:::", "arn:aws:logs::::*"}
 
 	tests := []struct {
-		name    string
-		fields  fields
-		want    string
-		wantErr bool
+		name   string
+		fields fields
+		want   []string
 	}{
 		{"Pass",
 			fields{&partition, "ssm", &region, &account, nil},
-			"awsArn:aws:ssm:eu-west-2:680235478471:",
-			false},
+			want,
+		},
 		{"Pass 2",
-			fields{partition: nil, service: "ssm", region: nil, account: nil, resource: nil},
-			"awsArn:aws:ssm:eu-west-2:680235478471:",
-			false},
+			fields{nil, "ssm", nil, nil, nil},
+			want,
+		},
+		{"Pass 3",
+			fields{nil, "logs", &empty, &empty, nil},
+			wantEmpty,
+		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			m := &AwsArn{
-				Partition: tt.fields.partition,
-				Service:   tt.fields.service,
-				Region:    tt.fields.region,
-				Account:   tt.fields.account,
-				Resource:  tt.fields.resource,
+				Partition: tt.fields.Partition,
+				Service:   tt.fields.Service,
+				Region:    tt.fields.Region,
+				Account:   tt.fields.Account,
+				Resource:  tt.fields.Resource,
 			}
-			got, err := m.Builder()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Builder() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("Builder() got = %v, want %v", got, tt.want)
+			if got := m.Builder(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Builder() = %v, want %v", got, tt.want)
 			}
 		})
 	}
