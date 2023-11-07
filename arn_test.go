@@ -5,48 +5,6 @@ import (
 	"testing"
 )
 
-func Test_awsArn_builder(t *testing.T) {
-
-	partition := "aws"
-	region := "eu-west-2"
-	account := "680235478471"
-	type args struct {
-		partition *string
-		service   string
-		region    *string
-		account   *string
-		resource  *string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    string
-		wantErr bool
-	}{
-		{"Pass",
-			args{partition: nil, service: "ssm", region: nil, account: nil, resource: nil},
-			"awsArn:aws:ssm:eu-west-2:680235478471:",
-			false},
-		{"Pass 2",
-			args{partition: &partition, service: "ssm", region: &region, account: &account, resource: nil},
-			"awsArn:aws:ssm:eu-west-2:680235478471:",
-			false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			m := &AwsArn{}
-			got, err := m.Builder(tt.args.partition, tt.args.service, tt.args.region, tt.args.account, tt.args.resource)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("builder() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("builder() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func Test_awsArn_getAccountId(t *testing.T) {
 
 	want := "680235478471"
@@ -85,6 +43,56 @@ func Test_awsArn_getRegion(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("getRegion() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAwsArn_Builder(t *testing.T) {
+
+	type fields struct {
+		partition *string
+		service   string
+		region    *string
+		account   *string
+		resource  *string
+	}
+
+	partition := "aws"
+	region := "eu-west-2"
+	account := "680235478471"
+
+	tests := []struct {
+		name    string
+		fields  fields
+		want    string
+		wantErr bool
+	}{
+		{"Pass",
+			fields{&partition, "ssm", &region, &account, nil},
+			"awsArn:aws:ssm:eu-west-2:680235478471:",
+			false},
+		{"Pass 2",
+			fields{partition: nil, service: "ssm", region: nil, account: nil, resource: nil},
+			"awsArn:aws:ssm:eu-west-2:680235478471:",
+			false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &AwsArn{
+				partition: tt.fields.partition,
+				service:   tt.fields.service,
+				region:    tt.fields.region,
+				account:   tt.fields.account,
+				resource:  tt.fields.resource,
+			}
+			got, err := m.Builder()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Builder() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Builder() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

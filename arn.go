@@ -13,35 +13,40 @@ import (
 )
 
 type AwsArn struct {
+	partition *string
+	service string
+	region *string
+	account *string
+	resource *string
 }
 
-func (m *AwsArn) Builder(partition *string, service string, region *string, account *string, resource *string) (string, error) {
+func (m *AwsArn) Builder() (string, error) {
 	var AwsArn string
 	var err error
 
 	defaultPartition := "aws"
 
-	if resource == nil {
-		resource = new(string)
+	if m.resource == nil {
+		m.resource = new(string)
 	}
 
-	if partition == nil {
-		partition = &defaultPartition
+	if m.partition == nil {
+		m.partition = &defaultPartition
 	}
 
-	if region == nil {
-		region, err = m.GetRegion()
+	if m.region == nil {
+		m.region, err = m.GetRegion()
 	}
 
 	if err != nil {
 		log.Print(err)
 	}
 
-	if account == nil {
-		account = m.GetAccountId()
+	if m.account == nil {
+		m.account = m.GetAccountId()
 	}
 
-	AwsArn = "awsArn:aws:" + service + ":" + *region + ":" + *account + ":" + *resource
+	AwsArn = "awsArn:aws:" + m.service + ":" + *m.region + ":" + *m.account + ":" + *m.resource
 	return AwsArn, nil
 }
 
