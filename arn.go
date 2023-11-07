@@ -1,4 +1,4 @@
-package arnBuilder
+package arn
 
 import (
 	"context"
