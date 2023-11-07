@@ -1,4 +1,4 @@
-module github.com/JamesWoolfenden/arnBuilder
+module github.com/JamesWoolfenden/arn
 
 go 1.21
 
