@@ -3,8 +3,8 @@ module github.com/JamesWoolfenden/arn
 go 1.21
 
 require (
-	github.com/aws/aws-sdk-go v1.47.3
 	github.com/aws/aws-sdk-go-v2/config v1.22.0
+	github.com/aws/aws-sdk-go-v2/service/sts v1.25.0
 )
 
 require (
@@ -17,7 +17,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.10.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.17.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.19.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.25.0 // indirect
 	github.com/aws/smithy-go v1.16.0 // indirect
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
 )
